@@ -17,6 +17,13 @@ include WP_CLI_ROOT . '/php/class-wp-cli-command.php';
 
 \WP_CLI\Utils\load_dependencies();
 
+register_shutdown_function( function () {
+	$last_error = error_get_last();
+	if ( ! empty( $last_error ) && 1 === $last_error['type'] ) {
+		WP_CLI::error( sprintf( 'Fatal: %s (at %s:%d)', $last_error['message'], $last_error['file'], $last_error['line'] ) );
+	}
+} );
+
 WP_CLI::get_runner()->before_wp_load();
 
 // Load wp-config.php code, in the global scope
